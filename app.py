@@ -36,8 +36,8 @@ def imdb(id):
         title = list(items[1].strings)[0].strip()
         year = list(items[1].strings)[2].strip()
         description = items[8].text.strip()
-        vote_count = items[5].text
-        vote_average = items[3].text
+        vote_count = int(items[5].text.replace(',', ''))
+        vote_average = float(items[3].text)
         return jsonify(poster=poster,
                 title=title,
                 year=year,
