@@ -1,7 +1,8 @@
 import os
+import requests
 from flask import Flask, Response, render_template, abort, jsonify
 from bs4 import BeautifulSoup
-import requests
+from settings import HOST
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'static'),
@@ -18,7 +19,7 @@ def view_main():
     return render_template('index.html')
 
 
-@app.route('/movie/poster/<file>/')
+@app.route('/movie/poster/<file>')
 def image(file):
     image = requests.get('http://ia.media-imdb.com/images/M/{}'.format(file))
     return Response(image.content, mimetype=image.headers['content-type'])
@@ -34,12 +35,15 @@ def imdb(id):
     try:
         soup = BeautifulSoup(html.text)
         items = soup.find_all(itemprop=True)
-        poster = items[0]['src'].rpartition('/')[2]
+        poster = 'http://{}/movie/poster/{}'.format(HOST,
+                items[0]['src'].rpartition('/')[2])
         title = list(items[1].strings)[0].strip()
+
         if list(items[1].strings)[1] == '(':
             year = list(items[1].strings)[2].strip()
         else:
             year = list(items[1].strings)[4].strip()
+
         description = items[8].text.strip()
         vote_count = int(items[5].text.replace(',', ''))
         vote_average = float(items[3].text)
