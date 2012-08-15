@@ -43,12 +43,18 @@ def imdb(id):
         description = items[8].text.strip()
         vote_count = int(items[5].text.replace(',', ''))
         vote_average = float(items[3].text)
+
+        genres = []
+        for g in soup.find_all(itemprop='genre'):
+            genres.append(g.strings.next())
+
         return jsonify(poster=poster,
                 title=title,
                 year=year,
                 overview=description,
                 vote_count=vote_count,
-                vote_average=vote_average)
+                vote_average=vote_average,
+                genres=genres)
     except:
         return 'Could not find!'
 
