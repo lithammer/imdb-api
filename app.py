@@ -4,7 +4,8 @@ from bs4 import BeautifulSoup
 import requests
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
-app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'static'), static_url_path='/static')
+app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'static'),
+        static_url_path='/static')
 
 
 @app.errorhandler(404)
@@ -17,13 +18,13 @@ def view_main():
     return render_template('index.html')
 
 
-@app.route('/imdb/poster/<id>/')
-def image(id):
-    image = requests.get('http://ia.media-imdb.com/images/M/{}'.format(id))
+@app.route('/movie/poster/<file>/')
+def image(file):
+    image = requests.get('http://ia.media-imdb.com/images/M/{}'.format(file))
     return Response(image.content, mimetype=image.headers['content-type'])
 
 
-@app.route('/imdb/<id>/')
+@app.route('/movie/<id>/')
 def imdb(id):
     url = 'http://www.imdb.com/title/{}/'
     html = requests.get(url.format(id))
