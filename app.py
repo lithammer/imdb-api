@@ -35,18 +35,15 @@ def imdb(id):
     try:
         soup = BeautifulSoup(html.text)
         items = soup.find_all(itemprop=True)
+
         poster = 'http://{}/movie/poster/{}'.format(HOST,
                 items[0]['src'].rpartition('/')[2])
         title = list(items[1].strings)[0].strip()
-
-        if list(items[1].strings)[1] == '(':
-            year = list(items[1].strings)[2].strip()
-        else:
-            year = list(items[1].strings)[4].strip()
-
         description = items[8].text.strip()
         vote_count = int(items[5].text.replace(',', ''))
         vote_average = float(items[3].text)
+
+        year = soup.time['datetime']
 
         genres = []
         for g in soup.find_all(itemprop='genre'):
