@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 from flask import Flask, Response, render_template, abort, jsonify
 from bs4 import BeautifulSoup
@@ -34,31 +35,37 @@ def imdb(id):
         abort(404)
     try:
         soup = BeautifulSoup(html.text)
-        items = soup.find_all(itemprop=True)
-
-        poster = 'http://{}/movie/poster/{}'.format(HOST,
-                items[0]['src'].rpartition('/')[2])
-        title = list(items[1].strings)[0].strip()
-        description = items[8].text.strip()
-        vote_count = int(items[5].text.replace(',', ''))
-        vote_average = float(items[3].text)
-
-        year = soup.time['datetime']
-
-        genres = []
-        for g in soup.find_all(itemprop='genre'):
-            genres.append(g.strings.next())
-
-        return jsonify(poster=poster,
-                title=title,
-                year=year,
-                overview=description,
-                vote_count=vote_count,
-                vote_average=vote_average,
-                genres=genres)
     except:
-        return 'Could not find!'
+        return jsonify(error='couldn\'t parse')
+
+    items = soup.find_all(itemprop=True)
+
+    poster = soup.find(rel='image_src')['href']
+    poster = re.sub(r'@@.+', '@@.SX200.jpg', poster)  # Change size
+    poster = poster.rpartition('/')[2]
+    poster = 'http://{}/movie/poster/{}'.format(HOST, poster)
+
+    title = list(items[1].strings)[0].strip()
+    description = items[8].text.strip()
+    vote_count = int(items[5].text.replace(',', ''))
+    vote_average = float(items[3].text)
+
+    year = soup.time['datetime']
+
+    genres = []
+    for g in soup.find_all(itemprop='genre'):
+        genres.append(g.strings.next())
+
+    return jsonify(poster=poster,
+            title=title,
+            year=year,
+            overview=description,
+            vote_count=vote_count,
+            vote_average=vote_average,
+            genres=genres)
 
 if __name__ == '__main__':
+    if not 'HEROKU' in os.environ:
+        app.debug = True
     port = int(os.environ.get('PORT', 8000))
     app.run(host='0.0.0.0', port=port)
