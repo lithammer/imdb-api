@@ -27,6 +27,7 @@ def image(id):
 def imdb(id):
     url = 'http://www.imdb.com/title/{}/'
     html = requests.get(url.format(id))
+
     if not html.ok:
         abort(404)
     try:
@@ -34,7 +35,10 @@ def imdb(id):
         items = soup.find_all(itemprop=True)
         poster = items[0]['src'].rpartition('/')[2]
         title = list(items[1].strings)[0].strip()
-        year = list(items[1].strings)[2].strip()
+        if list(items[1].strings)[1] == '(':
+            year = list(items[1].strings)[2].strip()
+        else:
+            year = list(items[1].strings)[4].strip()
         description = items[8].text.strip()
         vote_count = int(items[5].text.replace(',', ''))
         vote_average = float(items[3].text)
