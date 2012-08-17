@@ -8,6 +8,7 @@ from flask import Flask, Response, request, render_template, abort, jsonify
 from bs4 import BeautifulSoup
 
 from settings import HOST
+from filters import support_jsonp
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'static'),
@@ -31,6 +32,7 @@ def image(file):
 
 
 @app.route('/movie/<id>/')
+@support_jsonp
 def imdb(id):
     url = 'http://www.imdb.com/title/{}/'
     html = requests.get(url.format(id))
@@ -68,7 +70,7 @@ def imdb(id):
 
     return jsonify(poster=poster,
             title=title,
-            year=year,
+            release_date=year,
             overview=description,
             vote_count=vote_count,
             vote_average=vote_average,
