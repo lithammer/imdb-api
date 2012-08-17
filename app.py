@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
+
 import os
 import re
 import requests
-from flask import Flask, Response, render_template, abort, jsonify
+
+from flask import Flask, Response, request, render_template, abort, jsonify
 from bs4 import BeautifulSoup
+
 from settings import HOST
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
@@ -26,13 +30,14 @@ def image(file):
     return Response(image.content, mimetype=image.headers['content-type'])
 
 
-@app.route('/movie/<id>/')
+@app.route('/movie/<id>')
 def imdb(id):
     url = 'http://www.imdb.com/title/{}/'
     html = requests.get(url.format(id))
 
     if not html.ok:
         abort(404)
+
     try:
         soup = BeautifulSoup(html.text)
     except:
@@ -40,8 +45,13 @@ def imdb(id):
 
     items = soup.find_all(itemprop=True)
 
+    poster_width = int(request.args.get('w', '200'))
+    poster_height = int(request.args.get('h', '296'))
+
     poster = soup.find(rel='image_src')['href']
-    poster = re.sub(r'@@.+', '@@.SX200.jpg', poster)  # Change size
+    # Change poster size
+    poster = re.sub(r'@@.+', '@@.SX{}_SY{}.jpg'.format(
+        poster_width, poster_height), poster)
     poster = poster.rpartition('/')[2]
     poster = 'http://{}/movie/poster/{}'.format(HOST, poster)
 
