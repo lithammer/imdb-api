@@ -41,7 +41,7 @@ def imdb(id):
         abort(404)
 
     try:
-        soup = BeautifulSoup(html.text)
+        soup = BeautifulSoup(html.text, 'lxml')
     except:
         return jsonify(error='couldn\'t parse')
 
