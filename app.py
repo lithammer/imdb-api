@@ -31,7 +31,7 @@ def image(file):
     return Response(image.content, mimetype=image.headers['content-type'])
 
 
-@app.route('/movie/<id>/')
+@app.route('/movie/<id>')
 @support_jsonp
 def imdb(id):
     url = 'http://www.imdb.com/title/{}/'

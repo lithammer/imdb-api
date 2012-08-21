@@ -6,16 +6,29 @@
 		<title>IMDB API</title>
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
-		<link href="{{ url_for('static', filename='css/vendor/bootstrap.min.css') }}" rel="stylesheet">
-		<link href="{{ url_for('static', filename='css/vendor/bootstrap-responsive.min.css') }}" rel="stylesheet">
+		<link href="/static/css/vendor/bootstrap.min.css" rel="stylesheet">
+		<link href="/static/css/vendor/bootstrap-responsive.min.css" rel="stylesheet">
+		<link href="/static/css/custom.css" rel="stylesheet">
 	</head>
 	<body>
 		<div class="container">
-			<p>Simple IMDb API</p>
-			<p><a href="/movie/tt1446714/" target="_blank">http://imdb-api.herokuapp.com/imdb/tt1446714/</a></p>
+			<h1>Simple IMDb API</h1>
+			<p>Bazinga!</p>
+			<p><a id="example" href="/movie/tt1446714" target="_blank">http://imdb-api.herokuapp.com/imdb/tt1446714</a></p>
+
+			<form action="">
+				<label>Search</label>
+				<input type="text" id="search-id" placeholder="Enter a IMDb movie ID...">
+				<span class="help-block">For example "tt1446714"</span>
+				<button type="submit" class="btn">Submit</button>
+			</form>
+
+			<div id="movie" class="span8"></div>
 		</div>
+
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 		<script>window.jQuery || document.write('<script src="static/js/vendor/jquery-1.8.0.min.js"><\/script>')</script>
-		<script src="{{ url_for('static', filename='js/vendor/bootstrap.min.js') }}"></script>
+		<script src="/static/js/vendor/bootstrap.min.js"></script>
+		<script src="/static/js/main.js"></script>
 	</body>
 </html>
