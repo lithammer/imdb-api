@@ -7,7 +7,7 @@ import requests
 from flask import Flask, Response, request, render_template, abort, jsonify
 from bs4 import BeautifulSoup
 
-from settings import HOST
+from settings import HOST, DEBUG
 from filters import support_jsonp, cached
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
@@ -78,7 +78,6 @@ def imdb(id):
             genres=genres)
 
 if __name__ == '__main__':
-    if not 'HEROKU' in os.environ:
-        app.debug = True
+    print DEBUG
     port = int(os.environ.get('PORT', 8000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=DEBUG)

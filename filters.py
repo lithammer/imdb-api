@@ -4,18 +4,19 @@ import os
 from functools import wraps
 
 from flask import request, current_app
-from werkzeug.contrib.cache import MemcachedCache
+from werkzeug.contrib.cache import MemcachedCache, NullCache
 import pylibmc
 
 CACHE_TIMEOUT = 60 * 24 * 7
 
-cache = MemcachedCache(pylibmc.Client(
-    servers=[os.environ.get('MEMCACHE_SERVERS', 'localhost')],
-    username=os.environ.get('MEMCACHE_USERNAME', None),
-    password=os.environ.get('MEMCACHE_PASSWORD', None),
-    binary=True
-    )
-)
+cache = NullCache()
+
+if os.environ.get('HEROKU'):
+    cache = MemcachedCache(pylibmc.Client(
+        servers=[os.environ.get('MEMCACHE_SERVERS', 'localhost')],
+        username=os.environ.get('MEMCACHE_USERNAME', None),
+        password=os.environ.get('MEMCACHE_PASSWORD', None),
+        binary=True))
 
 
 def support_jsonp(f):
