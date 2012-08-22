@@ -9,10 +9,12 @@ $('form').submit(function(event) {
 	var request = $.getJSON('/movie/' + id + '?h=150', function(data) {
 		var html = '';
 		html += '<img src="' + data.poster + '" class="thumbnail">';
+		html += '<section class="movie-info">';
 		html += '<h2>' + data.title + '</h2>';
 		html += '<p>Rating: ' + data.vote_average + ' (' + data.vote_count + ' votes)</p>';
 		html += '<p>Release date: ' + data.release_date + '</p>';
 		html += '<p>' + data.overview + '</p>';
+		html += '</section>';
 		movie.html(html);
 	});
 
