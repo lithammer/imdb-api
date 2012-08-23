@@ -4,7 +4,7 @@ import os
 import re
 import requests
 
-from flask import Flask, Response, request, render_template, abort, jsonify
+from flask import Flask, Response, render_template, abort, jsonify
 from bs4 import BeautifulSoup
 
 from settings import HOST, DEBUG
@@ -31,10 +31,12 @@ def image(file):
     return Response(image.content, mimetype=image.headers['content-type'])
 
 
+@app.route('/movie/<id>/<int:width>/<int:height>')
+@app.route('/movie/<id>/<int:width>')
 @app.route('/movie/<id>')
 @support_jsonp
 @cached
-def imdb(id):
+def movie_info(id, width=200, height=296):
     url = 'http://www.imdb.com/title/{}/'
     html = requests.get(url.format(id))
 
@@ -44,17 +46,14 @@ def imdb(id):
     try:
         soup = BeautifulSoup(html.text, 'lxml')
     except:
-        return jsonify(error='couldn\'t parse')
+        return jsonify(error='Couldn\'t parse')
 
     items = soup.find_all(itemprop=True)
-
-    poster_width = int(request.args.get('w', '200'))
-    poster_height = int(request.args.get('h', '296'))
 
     poster = soup.find(rel='image_src')['href']
     # Change poster size
     poster = re.sub(r'@@.+', '@@.SX{}_SY{}.jpg'.format(
-        poster_width, poster_height), poster)
+        width, height), poster)
     poster = poster.rpartition('/')[2]
     poster = 'http://{}/movie/poster/{}'.format(HOST, poster)
 
@@ -78,6 +77,5 @@ def imdb(id):
             genres=genres)
 
 if __name__ == '__main__':
-    print DEBUG
     port = int(os.environ.get('PORT', 8000))
     app.run(host='0.0.0.0', port=port, debug=DEBUG)

@@ -2,11 +2,11 @@ $('form').submit(function(event) {
 	event.preventDefault();
 
 	var movie = $('#movie'),
-	id = $('#search-id').val();
+		id = $('#search-id').val();
 
 	movie.html('<img src="/static/img/loading.gif">');
 
-	var request = $.getJSON('/movie/' + id + '?h=150', function(data) {
+	var request = $.getJSON('/movie/' + id + '/0/150', function(data) {
 		var html = '';
 		html += '<img src="' + data.poster + '" class="thumbnail">';
 		html += '<section class="movie-info">';
