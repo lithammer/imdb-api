@@ -6,11 +6,19 @@ $('form').submit(function(event) {
 
 	movie.html('<img src="/static/img/loading.gif">');
 
-	var request = $.getJSON('/movie/' + id + '/0/150', function(data) {
+	var request = $.getJSON('/movie/' + id + '/110', function(data) {
 		var html = '';
 		html += '<img src="' + data.poster + '" class="img-polaroid">';
 		html += '<section class="movie-info">';
 		html += '<h2>' + data.title + '</h2>';
+		html += '<p>Genres: ';
+		$.each(data.genres, function(index, value) {
+			html += value;
+			if (data.genres[index + 1]) {
+				html += ' / ';
+			}
+		});
+		html += '</p>';
 		html += '<p>Rating: ' + data.vote_average + ' (' + data.vote_count + ' votes)</p>';
 		html += '<p>Release date: ' + data.release_date + '</p>';
 		html += '<p>' + data.overview + '</p>';
