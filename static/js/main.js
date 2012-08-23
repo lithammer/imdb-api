@@ -8,7 +8,7 @@ $('form').submit(function(event) {
 
 	var request = $.getJSON('/movie/' + id + '/0/150', function(data) {
 		var html = '';
-		html += '<img src="' + data.poster + '" class="thumbnail">';
+		html += '<img src="' + data.poster + '" class="img-polaroid">';
 		html += '<section class="movie-info">';
 		html += '<h2>' + data.title + '</h2>';
 		html += '<p>Rating: ' + data.vote_average + ' (' + data.vote_count + ' votes)</p>';
