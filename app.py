@@ -4,12 +4,13 @@ import os
 import re
 import requests
 
-from flask import Flask, Response, render_template, abort, jsonify
+from flask import Flask, Response, request, render_template, abort, jsonify
 from bs4 import BeautifulSoup
 
-from settings import HOST, DEBUG
 from filters import support_jsonp, cached
 
+app = Flask(__name__)
+app.config.from_object('settings')
 
 
 @app.errorhandler(404)
@@ -34,8 +35,8 @@ def image(file):
 @support_jsonp
 @cached
 def movie_info(id, width=200, height=296):
-    url = 'http://www.imdb.com/title/{}/'
-    html = requests.get(url.format(id))
+    html = requests.get('http://www.imdb.com/title/{}/'.format(id))
+    host = request.headers['Host']
 
     if not html.ok:
         abort(404)
@@ -52,7 +53,7 @@ def movie_info(id, width=200, height=296):
     poster = re.sub(r'@@.+', '@@.SX{}_SY{}.jpg'.format(
         width, height), poster)
     poster = poster.rpartition('/')[2]
-    poster = 'http://{}/movie/poster/{}'.format(HOST, poster)
+    poster = 'http://{}/movie/poster/{}'.format(host, poster)
 
     title = list(items[1].strings)[0].strip()
     description = items[8].text.strip()
@@ -75,4 +76,4 @@ def movie_info(id, width=200, height=296):
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
-    app.run(host='0.0.0.0', port=port, debug=DEBUG)
+    app.run(host='0.0.0.0', port=port)
