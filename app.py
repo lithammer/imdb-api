@@ -44,7 +44,7 @@ def movie_info(id, width=200, height=296):
     try:
         soup = BeautifulSoup(html.text, 'lxml')
     except:
-        return jsonify(error='Couldn\'t parse')
+        return jsonify(error='Error occured while parsing.')
 
     items = soup.find_all(itemprop=True)
 
