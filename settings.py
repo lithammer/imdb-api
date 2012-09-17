@@ -11,7 +11,7 @@ CACHE = NullCache()
 
 # Prod specific settings
 if os.environ.get('HEROKU'):
-    DEBUG = True
+    DEBUG = False
     CACHE = MemcachedCache(pylibmc.Client(
         servers=[os.environ.get('MEMCACHE_SERVERS', 'localhost')],
         username=os.environ.get('MEMCACHE_USERNAME', None),
