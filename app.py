@@ -19,12 +19,12 @@ def page_not_found(error):
 
 
 @app.route('/')
-def view_main():
+def index():
     return render_template('index.html')
 
 
-def image(file):
 @app.route('/poster/<file>')
+def proxy_image(file):
     """ Proxy the image since IMDb doesn't allow direct linking """
     image = requests.get('http://ia.media-imdb.com/images/M/{}'.format(file))
     return Response(image.content, mimetype=image.headers['content-type'])
@@ -35,7 +35,7 @@ def image(file):
 @app.route('/search/<id>')
 @support_jsonp
 @cached
-def movie_info(id, width=200, height=296):
+def search(id, width=200, height=296):
     """ Fetches and scrapes a movie or tv show by imdb id """
     html = requests.get('http://www.imdb.com/title/{}/'.format(id))
     host = request.headers['Host']
