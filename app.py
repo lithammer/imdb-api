@@ -25,6 +25,7 @@ def view_main():
 
 @app.route('/movie/poster/<file>')
 def image(file):
+    """ Proxy the image since IMDb doesn't allow direct linking """
     image = requests.get('http://ia.media-imdb.com/images/M/{}'.format(file))
     return Response(image.content, mimetype=image.headers['content-type'])
 
@@ -35,6 +36,7 @@ def image(file):
 @support_jsonp
 @cached
 def movie_info(id, width=200, height=296):
+    """ Fetches and scrapes a movie or tv show by imdb id """
     html = requests.get('http://www.imdb.com/title/{}/'.format(id))
     host = request.headers['Host']
 
