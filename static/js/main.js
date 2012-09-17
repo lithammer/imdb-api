@@ -6,7 +6,7 @@ $('form').submit(function(event) {
 
 	movie.html('<img src="/static/img/loading.gif">');
 
-	var request = $.getJSON('/movie/' + id + '/100', function(data) {
+	var request = $.getJSON('/search/' + id + '/100', function(data) {
 		var html = '';
 		html += '<img src="' + data.poster + '" class="img-polaroid">';
 		html += '<section class="movie-info">';

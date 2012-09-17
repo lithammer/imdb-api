@@ -23,16 +23,16 @@ def view_main():
     return render_template('index.html')
 
 
-@app.route('/movie/poster/<file>')
 def image(file):
+@app.route('/poster/<file>')
     """ Proxy the image since IMDb doesn't allow direct linking """
     image = requests.get('http://ia.media-imdb.com/images/M/{}'.format(file))
     return Response(image.content, mimetype=image.headers['content-type'])
 
 
-@app.route('/movie/<id>/<int:width>/<int:height>')
-@app.route('/movie/<id>/<int:width>')
-@app.route('/movie/<id>')
+@app.route('/search/<id>/<int:width>/<int:height>')
+@app.route('/search/<id>/<int:width>')
+@app.route('/search/<id>')
 @support_jsonp
 @cached
 def movie_info(id, width=200, height=296):
