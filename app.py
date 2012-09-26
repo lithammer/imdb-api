@@ -55,7 +55,7 @@ def search(id, width=200, height=296):
     poster = re.sub(r'@@.+', '@@.SX{}_SY{}.jpg'.format(
         width, height), poster)
     poster = poster.rpartition('/')[2]
-    poster = 'http://{}/movie/poster/{}'.format(host, poster)
+    poster = 'http://{}/poster/{}'.format(host, poster)
 
     title = list(items[1].strings)[0].strip()
     description = items[8].text.strip()
