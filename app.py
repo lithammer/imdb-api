@@ -69,12 +69,12 @@ def search(id, width=200, height=296):
         genres.append(g.strings.next())
 
     return jsonify(poster=poster,
-            title=title,
-            release_date=year,
-            overview=description,
-            vote_count=vote_count,
-            vote_average=vote_average,
-            genres=genres)
+                   title=title,
+                   release_date=year,
+                   overview=description,
+                   vote_count=vote_count,
+                   vote_average=vote_average,
+                   genres=genres)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
