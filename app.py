@@ -55,21 +55,36 @@ def search(id, width=200, height=296):
     poster = poster.rpartition('/')[2]
     poster = 'http://{}/poster/{}'.format(host, poster)
 
-    title = re.match(r'[\w\s]+\w', soup.title.string).group(0)
-    vote_average = float(soup.strong.string)
+    # Unreleased movies use this for placeholder
+    if poster.rpartition('/')[2] == 'film-81x120.png':
+        poster = ''
 
-    vote_count = soup.find_all('p', {'class': 'votes'})[0].contents[2]
-    vote_count = re.search(r'\(([\d,]+)', vote_count)
-    vote_count = int(vote_count.groups()[0].replace(',', ''))
+    title = re.match(r'[\w\s]+\w', soup.title.string).group(0)
+
+    try:
+        vote_average = float(soup.strong.string)
+    except AttributeError:
+        vote_average = 0
+
+    try:
+        vote_count = soup.find_all('p', {'class': 'votes'})[0].contents[2]
+        vote_count = re.search(r'\(([\d,]+)', vote_count)
+        vote_count = int(vote_count.groups()[0].replace(',', ''))
+    except IndexError:
+        vote_count = 0
 
     details = soup.find('section', {'class': 'details'}).find_all('p')
 
-    release_date = datetime.datetime.strptime(details[0].string, ' %d %b %Y')
+    release_date = datetime.datetime.strptime(details[0].string.strip(), '%d %b %Y')
     release_date = '{:%Y-%m-%d}'.format(release_date)
 
     genres = details[1].string.split(', ')
     run_time = details[2].string
-    description = details[4].contents[0].strip()
+
+    try:
+        description = details[4].contents[0].strip()
+    except IndexError:
+        description = details[2].contents[0].strip()
 
     return jsonify(poster=poster,
                    title=title,
