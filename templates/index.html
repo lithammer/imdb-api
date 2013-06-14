@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app>
+<html>
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -22,9 +22,13 @@
 			ul ul {
 				list-style-type: none;
 			}
+
+			ng-cloak: {
+				display: none !important;
+			}
 		</style>
 	</head>
-	<body>
+	<body ng-app>
 		{% raw %}
 		<div class="container" ng-controller="AppCtrl">
 			<h1>Simple IMDb API</h1>
@@ -35,8 +39,8 @@
 				<button class="btn" type="submit">Search</button>
 			</form>
 
-			<img src="static/img/loading.gif" ng-class="{ hidden: !loading }" class="hidden">
-			<div ng-class="{ hidden: !movie }" class="hidden">
+			<img src="static/img/loading.gif" ng-show="loading">
+			<div ng-show="movie" ng-cloak>
 				<h3>{{ movie.title }}</h3>
 				<img ng-src="{{ movie.poster }}" class="img-rounded pull-left" width="100">
 				<ul class="details">
@@ -45,12 +49,13 @@
 							<li ng-repeat="genre in movie.genres">{{ genre }}</li>
 						</ul>
 					</li>
-					<li><strong>Rating</strong>: {{ movie.vote_average}} ({{ movie.vote_count }} votes)</li>
+					<li><strong>Rating</strong>: {{ movie.vote_average }} ({{ movie.vote_count }} votes)</li>
 					<li><strong>Release date</strong>: {{ movie.release_date }}</li>
 					<li><strong>Plot summary</strong>:</li>
 					<li>{{ movie.overview }}</li>
 				</ul>
 			</div>
+			
 		</div>
 		{% endraw %}
 
