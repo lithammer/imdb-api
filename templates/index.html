@@ -54,8 +54,30 @@
 		</div>
 		{% endraw %}
 
-		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
-		<script src="/static/js/app.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+		<script>
+			function AppCtrl($scope, $http) {
+				$scope.search = function() {
+					$scope.loading = true;
+
+					var imdbId = $scope.imdbId.match(/tt[\d]{7}/);
+
+					if (imdbId) {
+						var movie = $http.get('/search/' + imdbId[0]);
+						
+						movie.success(function(response) {
+							$scope.loading = false;
+							$scope.movie = response;
+						});
+
+						movie.error(function(response) {
+							$scope.loading = false;
+							console.log(response);
+						});
+					}
+				};
+			}
+		</script>
 
 		<script>
 			(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
