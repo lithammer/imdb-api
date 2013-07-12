@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-
-import datetime
+from __future__ import unicode_literals
 import os
-import re
 import requests
 
-from flask import Flask, Response, request, render_template, abort, jsonify
+from flask import Flask, Response, render_template, abort, jsonify
 from bs4 import BeautifulSoup
 
 from filters import support_jsonp, cached
+from parser import IMDb
 
 app = Flask(__name__)
 app.config.from_object('settings')
@@ -31,15 +30,13 @@ def proxy_image(file):
     return Response(image.content, mimetype=image.headers['content-type'])
 
 
-@app.route('/search/<id>/<int:width>/<int:height>')
-@app.route('/search/<id>/<int:width>')
-@app.route('/search/<id>')
+@app.route('/<id>/<int:width>/<int:height>')
+@app.route('/<id>/<int:width>')
+@app.route('/<id>')
 @support_jsonp
 @cached
-def search(id, width=200, height=296):
-    """ Fetches and scrapes a movie by imdb id """
+def get(id, width=200, height=296):
     html = requests.get('http://m.imdb.com/title/{}/'.format(id))
-    host = request.headers['Host']
 
     if not html.ok:
         abort(404)
@@ -47,53 +44,12 @@ def search(id, width=200, height=296):
     try:
         soup = BeautifulSoup(html.text, 'lxml')
     except:
-        return jsonify(error='Error occured while parsing.')
+        abort(500)
 
-    poster = soup.find_all('img')[1].attrs['src']
-    poster = re.sub(r'@@.+', '@@.SX{width}_SY{height}.jpg'.format(
-        width=width, height=height), poster)
-    poster = poster.rpartition('/')[2]
-    poster = 'http://{}/poster/{}'.format(host, poster)
+    imdb = IMDb(soup, width, height)
 
-    # Unreleased movies use this for placeholder
-    if poster.rpartition('/')[2] == 'film-81x120.png':
-        poster = ''
+    return jsonify(imdb.as_json())
 
-    title = re.match(r'[\w\s]+\w', soup.title.string).group(0)
-
-    try:
-        vote_average = float(soup.strong.string)
-    except AttributeError:
-        vote_average = 0
-
-    try:
-        vote_count = soup.find_all('p', {'class': 'votes'})[0].contents[2]
-        vote_count = re.search(r'\(([\d,]+)', vote_count)
-        vote_count = int(vote_count.groups()[0].replace(',', ''))
-    except IndexError:
-        vote_count = 0
-
-    details = soup.find('section', {'class': 'details'}).find_all('p')
-
-    release_date = datetime.datetime.strptime(details[0].string.strip(), '%d %b %Y')
-    release_date = '{:%Y-%m-%d}'.format(release_date)
-
-    genres = details[1].string.split(', ')
-    run_time = details[2].string
-
-    try:
-        description = details[4].contents[0].strip()
-    except IndexError:
-        description = details[2].contents[0].strip()
-
-    return jsonify(poster=poster,
-                   title=title,
-                   release_date=release_date,
-                   overview=description,
-                   vote_count=vote_count,
-                   vote_average=vote_average,
-                   run_time=run_time,
-                   genres=genres)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))

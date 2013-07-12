@@ -32,7 +32,7 @@
 		{% raw %}
 		<div class="container" ng-controller="AppCtrl">
 			<h1>Simple IMDb API</h1>
-			<p><a href="/search/tt1446714" target="_blank">http://imdb-api.herokuapp.com/search/tt1446714</a></p>
+			<p><a href="/tt1446714" target="_blank">http://imdb-api.herokuapp.com/tt1446714</a></p>
 
 			<form class="input-append" ng-submit="search()">
 				<input class="span2" type="text" ng-model="imdbId" placeholder="tt1446714">
@@ -68,7 +68,7 @@
 					var imdbId = $scope.imdbId.match(/tt[\d]{7}/);
 
 					if (imdbId) {
-						var movie = $http.get('/search/' + imdbId[0]);
+						var movie = $http.get('/' + imdbId[0]);
 						
 						movie.success(function(response) {
 							$scope.loading = false;
