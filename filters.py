@@ -16,7 +16,7 @@ def support_jsonp(f):
         response = f(*args, **kwargs)
         callback = request.args.get('callback', False)
         if callback:
-            content = str(callback) + '(' + str(f(*args, **kwargs).data) + ')'
+            content = '%s(%s)' % (callback, response.data)
             response = current_app.response_class(
                 content, mimetype='application/javascript')
         return response
@@ -24,7 +24,7 @@ def support_jsonp(f):
 
 
 def cached(f, timeout=None):
-    """ Simple cache that cached based on URL path """
+    """ Simple URL based cache """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         response = cache.get(request.path)
