@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import datetime
+from datetime import datetime
 import os
 import re
 
@@ -13,16 +13,6 @@ class IMDb:
         self.html = html
         self.width = width
         self.height = height
-
-    _details = None
-
-    def _get_detail(self, key):
-        details = self._details if self._details else self.html.find_all('h1')
-        self._details = details
-        detail = [x for x in details if x.text == key]
-        if detail:
-            return detail[0].find_next().contents[0].strip()
-        return ''
 
     @property
     def poster(self):
@@ -46,9 +36,9 @@ class IMDb:
     @property
     def vote_count(self):
         try:
-            vote_count = self.html.find_all('p', {'class': 'votes'})[0].contents[2]
-            vote_count = re.search(r'\(([\d,]+)', vote_count)
-            vote_count = int(vote_count.groups()[0].replace(',', ''))
+            node = self.html.find('span', {'class': 'inline-block'})
+            vote_count = node.contents[1].contents[-1]
+            vote_count = int(vote_count.replace(',', ''))
         except IndexError:
             vote_count = 0
         return vote_count
@@ -56,29 +46,39 @@ class IMDb:
     @property
     def vote_average(self):
         try:
-            vote_average = float(self.html.strong.string)
+            vote_average = self.html.find('span', {'class':
+                'inline-block'})
+            vote_average = float(vote_average.contents[0])
         except AttributeError:
             vote_average = 0
         return vote_average
 
     @property
     def plot_summary(self):
-        return self._get_detail('Plot Summary')
+        text = self.html.find('p', {'itemprop': 'description'}).text
+        return text.strip()
 
     @property
     def release_date(self):
-        release_date = self._get_detail('Release Date')
-        release_date = datetime.datetime.strptime(release_date, '%d %b %Y')
-        release_date = '{:%Y-%m-%d}'.format(release_date)
+        release_date = ''
+        for e in self.html.find_all('h3', {'class': 'inline-block'}):
+            if e.text == 'Release Date:':
+                release_date = e.find_next_sibling('span').text
+                release_date = datetime.strptime(release_date, '%d %B %Y')
+                release_date = '{:%Y-%m-%d}'.format(release_date)
         return release_date
 
     @property
     def run_time(self):
-        return self._get_detail('Run time')
+        node = self.html.find('time', {'itemprop': 'duration'})
+        return node.text.strip()
 
     @property
     def genres(self):
-        return self._get_detail('Genre').split(', ')
+        genres = []
+        for node in self.html.find_all('span', {'itemprop': 'genre'}):
+            genres.append(node.text)
+        return genres
 
     def as_json(self):
         return {
