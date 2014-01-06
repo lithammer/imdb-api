@@ -9,7 +9,7 @@
 		<meta name="viewport" content="width=device-width">
 		
 		<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-		<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+		<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
 		
 		<style type="text/css" media="screen">
 			.hidden {
@@ -69,7 +69,7 @@
 		</div>
 		{% endraw %}
 
-		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular.min.js"></script>
 		<script>
 			function AppCtrl($scope, $http) {
 				$scope.search = function() {
@@ -79,7 +79,7 @@
 
 					if (imdbId) {
 						var movie = $http.get('/' + imdbId[0]);
-						
+
 						movie.success(function(response) {
 							$scope.loading = false;
 							$scope.movie = response;
