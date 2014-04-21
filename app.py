@@ -1,16 +1,43 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from functools import wraps
 import os
 import requests
 
-from flask import Flask, Response, render_template, abort, jsonify
+from flask import Flask, Response, request, render_template, abort, jsonify
 from bs4 import BeautifulSoup
 
-from filters import support_jsonp, cached
+from settings import config
 from parser import IMDb
 
 app = Flask(__name__)
-app.config.from_object('settings')
+app.config.from_object(config[os.getenv('FLASK_SETTINGS', 'default')])
+
+
+def support_jsonp(f):
+    """ Wraps JSONified output for JSONP """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        response = f(*args, **kwargs)
+        callback = request.args.get('callback')
+        if callback is not None:
+            content = '%s(%s)' % (callback, response.data)
+            response = current_app.response_class(
+                content, mimetype='application/javascript')
+        return response
+    return decorated_function
+
+
+def cached(f, timeout=None):
+    """ Simple URL based cache """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        cache = app.config['CACHE']
+        response = cache.get(request.path)
+        ttl = timeout or app.config['CACHE_TIMEOUT']
+        if response is None:
+            response = f(*args, **kwargs)
+            cache.set(request.path, response, ttl)
+        return response
+    return decorated_function
 
 
 @app.errorhandler(404)

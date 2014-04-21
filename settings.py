@@ -1,19 +1,38 @@
-# -*- coding: utf-8 -*-
-
 import os
 
-from werkzeug.contrib.cache import MemcachedCache, NullCache
-import pylibmc
+from werkzeug.contrib.cache import RedisCache, NullCache
 
-DEBUG = True
-CACHE_TIMEOUT = 60 * 24 * 7
-CACHE = NullCache()
 
-# Prod specific settings
-if os.environ.get('HEROKU'):
+class BaseConfig(object):
+
+    DEBUG = True
+    CACHE = NullCache()
+    CACHE_TIMEOUT = 0
+    SECRET_KEY = None
+
+
+class DevelopmentConfig(BaseConfig):
+
+    SECRET_KEY = 'my_secret_key'
+
+
+class ProductionConfig(BaseConfig):
+
     DEBUG = False
-    CACHE = MemcachedCache(pylibmc.Client(
-        servers=[os.environ.get('MEMCACHIER_SERVERS', 'localhost')],
-        username=os.environ.get('MEMCACHIER_USERNAME', None),
-        password=os.environ.get('MEMCACHIER_PASSWORD', None),
-        binary=True))
+    CACHE_TIMEOUT = 60 * 24 * 7
+    CACHE = RedisCache(host=os.environ.get('REDIS_HOST'),
+                       port=os.environ.get('REDIS_PORT'),
+                       password=os.environ.get('REDIS_PASSWORD'))
+
+
+class TestingConfig(BaseConfig):
+
+    TESTING = True
+
+config = {
+    'development': DevelopmentConfig,
+    'production': ProductionConfig,
+    'testing': TestingConfig,
+
+    'default': DevelopmentConfig
+}
