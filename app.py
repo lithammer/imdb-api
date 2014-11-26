@@ -70,7 +70,7 @@ def get(id, width=200, height=296):
 
     try:
         soup = BeautifulSoup(html.text, 'lxml')
-    except:
+    except Exception:
         abort(500)
 
     imdb = IMDb(soup, width, height)
