@@ -2,7 +2,8 @@ from functools import wraps
 import os
 import requests
 
-from flask import Flask, Response, request, render_template, abort, jsonify
+from flask import (Flask, Response, request, render_template, abort, jsonify,
+                   current_app)
 from bs4 import BeautifulSoup
 
 from settings import config
