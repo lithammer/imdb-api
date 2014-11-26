@@ -14,7 +14,7 @@ app.config.from_object(config[os.getenv('FLASK_SETTINGS', 'default')])
 
 
 def support_jsonp(f):
-    """ Wraps JSONified output for JSONP """
+    """Wraps JSONified output for JSONP."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         response = f(*args, **kwargs)
@@ -28,7 +28,7 @@ def support_jsonp(f):
 
 
 def cached(f, timeout=None):
-    """ Simple URL based cache """
+    """Simple URL based cache."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         cache = app.config['CACHE']
@@ -51,10 +51,10 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/poster/<file>')
-def proxy_image(file):
-    """ Proxy the image since IMDb doesn't allow direct linking """
-    image = requests.get('http://ia.media-imdb.com/images/M/{}'.format(file))
+@app.route('/poster/<filename>')
+def proxy_image(filename):
+    """Proxy the image since IMDb doesn't allow direct linking."""
+    image = requests.get('http://ia.media-imdb.com/images/M/%s' % filename)
     return Response(image.content, mimetype=image.headers['content-type'])
 
 

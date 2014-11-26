@@ -19,7 +19,7 @@ class IMDb:
             width=self.width, height=self.height), poster)
         poster = poster.rpartition('/')[2]
         host = os.getenv('HOSTNAME', default=request.headers['Host'])
-        poster = 'http://{}/poster/{}'.format(host, poster)
+        poster = 'http://%s/poster/%s' % (host, poster)
 
         # Unreleased movies use this for placeholder
         if poster.rpartition('/')[2] == 'film-81x120.png':
@@ -63,7 +63,7 @@ class IMDb:
             if e.text == 'Release Date:':
                 release_date = e.find_next_sibling('span').text
                 release_date = datetime.strptime(release_date, '%d %B %Y')
-                release_date = '{:%Y-%m-%d}'.format(release_date)
+                release_date = '{:%Y-%m-%d}' % release_date
         return release_date
 
     @property
