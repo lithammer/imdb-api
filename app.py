@@ -1,4 +1,4 @@
-from functools import wraps
+import functools
 import os
 import requests
 
@@ -15,7 +15,7 @@ app.config.from_object(config[os.getenv('FLASK_SETTINGS', 'default')])
 
 def support_jsonp(f):
     """Wraps JSONified output for JSONP."""
-    @wraps(f)
+    @functools.wraps(f)
     def decorated_function(*args, **kwargs):
         response = f(*args, **kwargs)
         callback = request.args.get('callback')
@@ -29,7 +29,7 @@ def support_jsonp(f):
 
 def cached(f, timeout=None):
     """Simple URL based cache."""
-    @wraps(f)
+    @functools.wraps(f)
     def decorated_function(*args, **kwargs):
         cache = app.config['CACHE']
         response = cache.get(request.path)
@@ -64,7 +64,7 @@ def proxy_image(filename):
 @support_jsonp
 @cached
 def get(id, width=200, height=296):
-    html = requests.get('http://m.imdb.com/title/{}/'.format(id))
+    html = requests.get('http://m.imdb.com/title/%s/' % id)
 
     if not html.ok:
         abort(404)

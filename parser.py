@@ -44,12 +44,11 @@ class IMDb:
     @property
     def vote_average(self):
         try:
-            vote_average = self.html.find('span', {'class':
-                'inline-block'})
-            vote_average = float(vote_average.contents[0])
+            vote_average = self.html.find('span', {'class': 'inline-block'})
+            vote_average = vote_average.contents[0]
         except AttributeError:
             vote_average = 0
-        return vote_average
+        return str(vote_average)
 
     @property
     def plot_summary(self):
@@ -63,7 +62,7 @@ class IMDb:
             if e.text == 'Release Date:':
                 release_date = e.find_next_sibling('span').text
                 release_date = datetime.strptime(release_date, '%d %B %Y')
-                release_date = '{:%Y-%m-%d}' % release_date
+                release_date = '{:%Y-%m-%d}'.format(release_date)
         return release_date
 
     @property
