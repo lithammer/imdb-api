@@ -18,6 +18,7 @@ def index():
 
 
 @app.route('/poster/<filename>')
+@cached
 def proxy_image(filename):
     """Proxy the image since IMDb doesn't allow direct linking."""
     image = requests.get('http://ia.media-imdb.com/images/M/%s' % filename)
