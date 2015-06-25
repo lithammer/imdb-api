@@ -2,7 +2,8 @@ from bs4 import BeautifulSoup
 from flask import Response, render_template, abort, jsonify
 import requests
 
-from imdb import app, cached, support_jsonp
+from imdb import app
+from imdb.decorators import cached, support_jsonp
 from imdb.parser import IMDb
 
 
