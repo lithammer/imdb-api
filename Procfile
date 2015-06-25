@@ -1,1 +1,1 @@
-web: python runserver.py $PORT
+web: waitress-serve --port=$PORT imdb:api
