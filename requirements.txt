@@ -4,4 +4,4 @@ flask==1.0
 lxml==4.6.5
 redis==2.10.3
 requests==2.20.0
-waitress==1.4.3
+waitress==2.1.1
